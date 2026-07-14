@@ -91,13 +91,4 @@ public class ContestController {
         );
     }
 
-//    @GetMapping("/{contestId}/leaderboard")
-//    public ResponseEntity<List<LeaderboardResponse>>
-//    getLeaderboard(
-//            @PathVariable Long contestId){
-//
-//        return ResponseEntity.ok(
-//                contestService.getLeaderboard(
-//                        contestId));
-//    }
 }
