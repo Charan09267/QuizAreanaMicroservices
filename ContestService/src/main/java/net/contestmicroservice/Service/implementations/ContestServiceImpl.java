@@ -28,12 +28,13 @@ public class ContestServiceImpl implements ContestService {
     private final QuestionRepo questionRepository;
 
     @Override
-    public ContestResponse createContest(CreateContestRequest request) {
+    public ContestResponse createContest(Long userId , CreateContestRequest request) {
 
 
         Contest contest = Contest.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
+                .createdBy(userId)
                 .visibility(request.getVisibility())
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
@@ -69,56 +70,101 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public void deleteContest(Long contestId) {
+    public ContestResponse updateContest(Long contestId,
+                                         UpdateContestRequest request ,Long userId) {
 
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Contest not found"));
 
-        if (contest.getStatus() != ContestStatus.DRAFT) {
+        if (contest.getStatus() == ContestStatus.LIVE ||
+                contest.getStatus() == ContestStatus.COMPLETED ||
+                contest.getStatus() == ContestStatus.CANCELLED || contest.getCreatedBy() != userId) {
+
             throw new IllegalStateException(
-                    "Only draft contests can be deleted");
+                    "Contest cannot be updated");
+        }
+
+        contest.setTitle(request.getTitle());
+        contest.setDescription(request.getDescription());
+        contest.setVisibility(request.getVisibility());
+        contest.setStartTime(request.getStartTime());
+        contest.setEndTime(request.getEndTime());
+        contest.setDurationSeconds(request.getDurationSeconds());
+        contest.setMaxParticipants(request.getMaxParticipants());
+        contest.setContestType(request.getContestType());
+
+        Contest updatedContest = contestRepository.save(contest);
+
+        return contestMapper.toResponse(updatedContest);
+    }
+
+
+    @Override
+    public void deleteContest(Long contestId , Long userId) {
+
+        Contest contest = contestRepository.findById(contestId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Contest not found"));
+
+        if(!userId.equals(contest.getCreatedBy())){
+            throw new IllegalStateException("User is not allowed to delete contest");
+        }
+
+        if( contest.getStatus() == ContestStatus.LIVE){
+            throw new IllegalStateException(
+                    "Cannot delete a contest which is live..."
+            );
         }
 
         contestRepository.delete(contest);
     }
 
+
+
     @Override
-    public ContestResponse publishContest(Long contestId) {
+    public ContestResponse publishContest(Long contestId , Long userId) {
         Contest contest = contestRepository.findById(contestId)
-                .orElseThrow( () -> new ResourceNotFoundException("Contest not found!") );
+                .orElseThrow(() -> new ResourceNotFoundException("Contest not found!"));
 
-        if(contest.getStatus() != ContestStatus.DRAFT){
-            throw new IllegalStateException("Contest status is not DRAFT , so it may already been published....");
+        if ( !userId.equals(contest.getCreatedBy())) {
+            throw new IllegalStateException("User is not allowed to publish contest");
         }
 
-        if (contest.getStartTime().isAfter(contest.getEndTime())) {
-            throw new IllegalStateException(
-                    "Start time must be before end time");
+            if (contest.getStatus() != ContestStatus.DRAFT) {
+                throw new IllegalStateException("Contest status is not DRAFT , so it may already been published....");
+            }
+
+            if (contest.getStartTime().isAfter(contest.getEndTime())) {
+                throw new IllegalStateException(
+                        "Start time must be before end time");
+            }
+
+            long questionCount =
+                    questionRepository.countByContestId(contestId);
+
+            if (questionCount == 0) {
+                throw new IllegalStateException(
+                        "Contest must contain at least one question"
+                );
+            }
+
+            contest.setStatus(ContestStatus.UPCOMING);
+            contestRepository.save(contest);
+
+            return contestMapper.toResponse(contest);
         }
-
-        long questionCount =
-                questionRepository.countByContestId(contestId);
-
-        if(questionCount == 0){
-            throw new IllegalStateException(
-                    "Contest must contain at least one question"
-            );
-        }
-
-        contest.setStatus(ContestStatus.UPCOMING);
-        contestRepository.save(contest);
-
-        return contestMapper.toResponse(contest);
-    }
-
 
     @Override
-    public ContestResponse cancelContest(Long contestId) {
+    public ContestResponse cancelContest(Long contestId , Long userId) {
 
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Contest not found"));
+
+        if (userId.equals(contest.getCreatedBy())) {
+            throw new IllegalStateException("User is not allowed to cancel contest");
+        }
 
         if (contest.getStatus() == ContestStatus.LIVE ||
                 contest.getStatus() == ContestStatus.COMPLETED) {
@@ -161,36 +207,4 @@ public class ContestServiceImpl implements ContestService {
             log.info("Contest {} completed", contest.getId());
         });
     }
-
-    @Override
-    public ContestResponse updateContest(Long contestId,
-                                         UpdateContestRequest request) {
-
-        Contest contest = contestRepository.findById(contestId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Contest not found"));
-
-        if (contest.getStatus() == ContestStatus.LIVE ||
-                contest.getStatus() == ContestStatus.COMPLETED ||
-                contest.getStatus() == ContestStatus.CANCELLED) {
-
-            throw new IllegalStateException(
-                    "Contest cannot be updated");
-        }
-
-        contest.setTitle(request.getTitle());
-        contest.setDescription(request.getDescription());
-        contest.setVisibility(request.getVisibility());
-        contest.setStartTime(request.getStartTime());
-        contest.setEndTime(request.getEndTime());
-        contest.setDurationSeconds(request.getDurationSeconds());
-        contest.setMaxParticipants(request.getMaxParticipants());
-        contest.setContestType(request.getContestType());
-
-        Contest updatedContest = contestRepository.save(contest);
-
-        return contestMapper.toResponse(updatedContest);
-    }
-
-
 }

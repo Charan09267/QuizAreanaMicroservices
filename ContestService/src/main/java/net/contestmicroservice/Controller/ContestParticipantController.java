@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/contests")
+@RequestMapping("/contests")
 @RequiredArgsConstructor
 public class ContestParticipantController {
 
@@ -17,11 +17,12 @@ public class ContestParticipantController {
 
     @PostMapping("/{contestId}/join")
     public ResponseEntity<ParticipantResponse> joinContest(
+            @RequestHeader("X-USER-ID") Long userId,
             @PathVariable Long contestId
     ) {
 
         return ResponseEntity.ok(
-                participantService.joinContest(contestId)
+                participantService.joinContest(userId , contestId)
         );
     }
 

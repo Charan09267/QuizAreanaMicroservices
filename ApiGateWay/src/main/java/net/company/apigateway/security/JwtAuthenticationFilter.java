@@ -22,7 +22,7 @@ public class JwtAuthenticationFilter
 
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
-        System.out.println("JWT FILTER CREATED");
+
         this.jwtUtil = jwtUtil;
     }
 
@@ -40,8 +40,7 @@ public class JwtAuthenticationFilter
             GatewayFilterChain chain
     ) {
 
-        System.out.println("JWT FILTER CALLED: "
-                + exchange.getRequest().getURI().getPath());
+
         String path =
                 exchange.getRequest()
                         .getURI()

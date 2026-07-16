@@ -16,8 +16,6 @@ public class ParticipantResponse {
 
     private Long userId;
 
-    private String username;
-
     private LocalDateTime joinedAt;
 
     private ParticipantStatus status;

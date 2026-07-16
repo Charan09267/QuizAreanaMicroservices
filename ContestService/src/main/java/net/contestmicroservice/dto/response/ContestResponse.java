@@ -3,6 +3,7 @@ package net.contestmicroservice.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import net.contestmicroservice.entity.enums.ContestStatus;
 
 import java.time.LocalDateTime;
 
@@ -27,7 +28,7 @@ public class ContestResponse {
     private LocalDateTime endTime;
 
 
-    private String status;
+    private ContestStatus status;
 
 
     private Integer totalQuestions;

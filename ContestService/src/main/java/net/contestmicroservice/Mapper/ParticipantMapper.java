@@ -2,7 +2,9 @@ package net.contestmicroservice.Mapper;
 
 import net.contestmicroservice.dto.response.ParticipantResponse;
 import net.contestmicroservice.entity.ContestParticipant;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ParticipantMapper {
     public ParticipantResponse toResponse(
             ContestParticipant participant

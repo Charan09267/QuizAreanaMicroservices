@@ -39,7 +39,7 @@ public class ContestParticipant {
 
     private LocalDateTime joinedAt;
 
-
+    @Enumerated(EnumType.STRING)
     private ParticipantStatus status;
 
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import net.contestmicroservice.entity.enums.QuestionType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,7 +31,7 @@ public class ContestQuestion {
     @Column(columnDefinition="TEXT")
     private String questionText;
 
-
+    @Enumerated(EnumType.STRING)
     private QuestionType questionType;
 
 
@@ -44,11 +45,11 @@ public class ContestQuestion {
     private Integer orderIndex;
 
 
-
+    @Builder.Default
     @OneToMany(
             mappedBy="question",
             cascade=CascadeType.ALL
     )
-    private List<ContestOption> options;
+    private List<ContestOption> options = new ArrayList<>();
 
 }

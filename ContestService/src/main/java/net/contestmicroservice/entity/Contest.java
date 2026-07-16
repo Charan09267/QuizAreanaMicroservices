@@ -37,7 +37,7 @@ public class Contest {
     // From auth-service
     private Long createdBy;
 
-
+    @Enumerated(EnumType.STRING)
     private Visibility visibility;
 
 
@@ -52,10 +52,10 @@ public class Contest {
 
     private Integer maxParticipants;
 
-
+    @Enumerated(EnumType.STRING)
     private ContestType contestType;
 
-
+    @Enumerated(EnumType.STRING)
     private ContestStatus status;
 
 

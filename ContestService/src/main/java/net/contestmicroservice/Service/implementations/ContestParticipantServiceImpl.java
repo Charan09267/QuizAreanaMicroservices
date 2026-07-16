@@ -14,6 +14,7 @@ import net.contestmicroservice.entity.enums.ParticipantStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 
@@ -28,7 +29,7 @@ public class ContestParticipantServiceImpl implements ContestParticipantService 
     //needs user for this service........
     @Override
     @Transactional
-    public ParticipantResponse joinContest(Long contestId) {
+    public ParticipantResponse joinContest(Long userId , Long contestId) {
 
         Contest contest = contestRepository.findById(contestId)
                 .orElseThrow(() ->
@@ -45,7 +46,7 @@ public class ContestParticipantServiceImpl implements ContestParticipantService 
         // Prevent duplicate registration
         if (participantRepository.existsByContestIdAndUserId(
                 contestId,
-                new Random().nextLong())) {
+                userId)) {
 
             throw new IllegalStateException(
                     "You have already joined this contest");
@@ -65,7 +66,8 @@ public class ContestParticipantServiceImpl implements ContestParticipantService 
         ContestParticipant participant =
                 ContestParticipant.builder()
                         .contest(contest)
-                        .userId(new Random().nextLong())
+                        .userId(userId)
+                        .joinedAt(LocalDateTime.now())
                         .status(ParticipantStatus.REGISTERED)
                         .build();
 

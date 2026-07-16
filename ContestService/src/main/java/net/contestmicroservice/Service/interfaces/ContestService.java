@@ -7,7 +7,7 @@ import net.contestmicroservice.dto.response.ContestResponse;
 import java.util.List;
 
 public interface ContestService {
-    ContestResponse createContest(CreateContestRequest request);
+    ContestResponse createContest(Long userId , CreateContestRequest request);
 
     ContestResponse getContestById(Long contestId);
 
@@ -15,13 +15,14 @@ public interface ContestService {
 
     ContestResponse updateContest(
             Long contestId,
-            UpdateContestRequest request);
+            UpdateContestRequest request,
+            Long userId);
 
-    void deleteContest(Long contestId);
+    void deleteContest(Long contestId , Long userId);
 
-    ContestResponse publishContest(Long contestId);
+    ContestResponse publishContest(Long contestId , Long userId);
 
-    ContestResponse cancelContest(Long contestId);
+    ContestResponse cancelContest(Long contestId , Long userId);
 
     void activateContests();
 

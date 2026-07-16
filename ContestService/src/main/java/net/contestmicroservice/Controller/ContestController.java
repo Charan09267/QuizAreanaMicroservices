@@ -3,6 +3,7 @@ package net.contestmicroservice.Controller;
 import lombok.RequiredArgsConstructor;
 import net.company.common.Exception.ResourceNotFoundException;
 import net.contestmicroservice.Service.implementations.ContestServiceImpl;
+import net.contestmicroservice.Service.interfaces.ContestService;
 import net.contestmicroservice.dto.request.CreateContestRequest;
 import net.contestmicroservice.dto.request.UpdateContestRequest;
 import net.contestmicroservice.dto.response.ContestResponse;
@@ -12,18 +13,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/contests")
+@RequestMapping("/contests")
 @RequiredArgsConstructor
 public class ContestController {
-    private final ContestServiceImpl contestService;
+    private final ContestService contestService;
 
     //creating a contest
     @PostMapping
     public ResponseEntity<ContestResponse> createContest(
+            @RequestHeader("X-USER-ID")  Long userId,
              @RequestBody CreateContestRequest request) {
 
         return ResponseEntity.ok(
-                contestService.createContest(request)
+                contestService.createContest( userId , request)
         );
     }
 
@@ -54,19 +56,21 @@ public class ContestController {
     @PutMapping("/{id}")
     public ResponseEntity<ContestResponse> updateContest(
             @PathVariable Long id,
-             @RequestBody UpdateContestRequest request) {
+             @RequestBody UpdateContestRequest request,
+            @RequestHeader("X-USER-ID") Long userId) {
 
         return ResponseEntity.ok(
-                contestService.updateContest(id, request)
+                contestService.updateContest(id, request , userId)
         );
     }
 
     //Delete a contest......
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteContest(
-            @PathVariable Long id) {
+            @PathVariable Long id,
+            @RequestHeader("X-USER-ID") Long userId) {
 
-        contestService.deleteContest(id);
+        contestService.deleteContest(id , userId);
 
         return ResponseEntity.noContent().build();
     }
@@ -74,20 +78,22 @@ public class ContestController {
     //publish a contest to live......
     @PostMapping("/{contestId}/publish")
     public ResponseEntity<ContestResponse> publishContest(
-            @PathVariable Long contestId) {
+            @PathVariable Long contestId,
+            @RequestHeader("X-USER-ID")Long userId) {
 
         return ResponseEntity.ok(
-                contestService.publishContest(contestId)
+                contestService.publishContest(contestId , userId)
         );
     }
 
     //Cancel a contest.....
     @PostMapping("/{contestId}/cancel")
     public ResponseEntity<ContestResponse> cancelContest(
-            @PathVariable Long contestId) {
+            @PathVariable Long contestId ,
+            @RequestHeader("X-USER-ID")Long userId) {
 
         return ResponseEntity.ok(
-                contestService.cancelContest(contestId)
+                contestService.cancelContest(contestId ,userId )
         );
     }
 

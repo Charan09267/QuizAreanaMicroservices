@@ -18,8 +18,6 @@ public class CreateContestRequest {
     private String description;
 
 
-    private Long createdBy;
-
 
     private Visibility visibility;
 
