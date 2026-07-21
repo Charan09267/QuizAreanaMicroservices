@@ -10,4 +10,6 @@ public interface ContestParticipantService {
     List<ParticipantResponse> getParticipants(
             Long contestId
     );
+
+    Long getParticipantId(Long contestId, Long userId);
 }

@@ -36,5 +36,10 @@ public class ContestParticipantController {
         );
     }
 
+    @GetMapping("/{contestId}/participants/{userId}")
+    public ResponseEntity<Long> getParticipant(@PathVariable Long contetId , @PathVariable  Long userId ) {
+        return  ResponseEntity.ok(participantService.getParticipantId(contetId , userId));
+    }
+
 }
 
