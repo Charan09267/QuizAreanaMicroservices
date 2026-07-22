@@ -6,8 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient(
-        name = "contest-service",
-        url = "${services.contest.url}"
+        name = "contest-service"
 )
 public interface ContestServiceClient {
     @GetMapping("/contests/{id}")

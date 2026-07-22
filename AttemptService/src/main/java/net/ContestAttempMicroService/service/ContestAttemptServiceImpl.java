@@ -62,7 +62,7 @@ public class ContestAttemptServiceImpl implements ContestAttemptService {
                 .wrongAnswers(0)
                 .unansweredQuestions(contest.getTotalQuestions())
                 .startedAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusSeconds(Long.parseLong(contest.getTotalDurationInSeconds())))
+                .expiresAt(LocalDateTime.now().plusSeconds(Long.parseLong(contest.getDurationInSeconds())))
                 .build();
 
         return null;

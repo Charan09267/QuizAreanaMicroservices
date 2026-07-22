@@ -33,4 +33,6 @@ public class ContestResponse {
 
     private Integer totalQuestions;
 
+    private Integer durationInSeconds;
+
 }

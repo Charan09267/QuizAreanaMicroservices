@@ -95,7 +95,7 @@ public class ContestParticipantServiceImpl implements ContestParticipantService 
     @Override
     public Long getParticipantId(Long contestId, Long userId) {
         ContestParticipant participantId = participantRepository.findByContestIdAndUserId(contestId , userId).orElseThrow(()->
-                new IllegalStateException("You are not allowed to start the contest")
+                new IllegalStateException("You are not registered to the contest")
         );
         return participantId.getId();
     }

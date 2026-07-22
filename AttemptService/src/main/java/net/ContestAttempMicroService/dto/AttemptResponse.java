@@ -23,7 +23,7 @@ public class AttemptResponse {
 
     private LocalDateTime submittedAt;
 
-    private net.ContestAttempMicroService.entity.AttemptStatus status;
+    private AttemptStatus status;
 
     private BigDecimal score;
 

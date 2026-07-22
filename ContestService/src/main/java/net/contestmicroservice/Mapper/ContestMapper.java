@@ -16,6 +16,7 @@ public class ContestMapper {
                 .startTime(contest.getStartTime())
                 .status(contest.getStatus())
                 .endTime(contest.getEndTime())
+                .durationInSeconds(contest.getDurationSeconds())
                 .build();
     }
 }
