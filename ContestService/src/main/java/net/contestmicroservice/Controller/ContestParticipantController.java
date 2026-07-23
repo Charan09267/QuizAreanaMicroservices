@@ -3,6 +3,7 @@ package net.contestmicroservice.Controller;
 import lombok.RequiredArgsConstructor;
 import net.contestmicroservice.Service.interfaces.ContestParticipantService;
 import net.contestmicroservice.dto.response.ParticipantResponse;
+import net.contestmicroservice.entity.enums.ParticipantStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,11 @@ public class ContestParticipantController {
 
     @GetMapping("/{contestId}/participants/{userId}")
     public ResponseEntity<Long> getParticipant(@PathVariable Long contestId , @PathVariable  Long userId ) {
+        return  ResponseEntity.ok(participantService.getParticipantId(contestId , userId));
+    }
+
+    @PostMapping("/{contestId}/participants/{userId}")
+    public ResponseEntity<Long> setParticipantStatus(@PathVariable Long contestId , @PathVariable  Long userId , @RequestBody ParticipantStatus status) {
         return  ResponseEntity.ok(participantService.getParticipantId(contestId , userId));
     }
 

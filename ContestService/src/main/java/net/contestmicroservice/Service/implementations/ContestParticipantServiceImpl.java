@@ -99,4 +99,15 @@ public class ContestParticipantServiceImpl implements ContestParticipantService 
         );
         return participantId.getId();
     }
+
+    @Override
+    public void setParticipantStatus(Long contestId, Long participantId, ParticipantStatus status) {
+        ContestParticipant participant = participantRepository.findByContestIdAndUserId(contestId , participantId).orElseThrow(
+                ()-> new  IllegalStateException("You are not registered to the contest")
+        );
+
+        participant.setStatus(status);
+    }
+
+
 }
