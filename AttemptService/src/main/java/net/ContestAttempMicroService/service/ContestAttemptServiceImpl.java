@@ -5,9 +5,7 @@ import lombok.RequiredArgsConstructor;
 import net.ContestAttempMicroService.Client.ContestServiceClient;
 import net.ContestAttempMicroService.Mapper.AttemptMapper;
 import net.ContestAttempMicroService.Repo.ContestAttemptRepository;
-import net.ContestAttempMicroService.dto.AttemptResponse;
-import net.ContestAttempMicroService.dto.ContestDto;
-import net.ContestAttempMicroService.dto.ContestResultResponse;
+import net.ContestAttempMicroService.dto.*;
 import net.ContestAttempMicroService.entity.AttemptStatus;
 import net.ContestAttempMicroService.entity.ContestAttempt;
 import net.ContestAttempMicroService.entity.ParticipantStatus;
@@ -83,44 +81,32 @@ public class ContestAttemptServiceImpl implements ContestAttemptService {
     }
 
     @Override
-    public AttemptResponse submitContest(Long contestId, Long userId) {
+    public String submitContest(Long contestId, Long userId , SubmitRequestDto request) {
+
         Long participantId = contestServiceClient.getParticipantId(contestId, userId);
 
-        ContestAttempt att empt =
+        ContestAttempt attempt =
                 contestAttemptRepository.findById(participantId)
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Attempt not found"));
-
-
-
-
         if (attempt.getStatus()
                 != AttemptStatus.IN_PROGRESS) {
 
             throw new IllegalStateException(
                     "Attempt already submitted");
         }
+        // Basic validation
+        if (request.getAnswers() == null || request.getAnswers().isEmpty()) {
+            throw new IllegalArgumentException("No answers submitted.");
+        }
 
-          //kafka evaluation service......
-//        evaluationService.evaluateAttempt(attempt);
+//        // Publish the submission to Kafka
+//        kafkaTemplate.send("contest-submissions", request);
+//
+//        return "Contest submitted successfully. Evaluation is in progress.";
 
-        attempt.setSubmittedAt(LocalDateTime.now());
-
-        attempt.setStatus(AttemptStatus.SUBMITTED);
-
-        attempt.setTimeTakenSeconds(
-                (int) Duration.between(
-                                attempt.getStartedAt(),
-                                attempt.getSubmittedAt())
-                        .getSeconds());
-
-        //set the status of the participant table.....
-        contestServiceClient.setParticipantStatus(contestId , userId , ParticipantStatus.SUBMITTED);
-
-        contestAttemptRepository.save(attempt);
-
-        return attemptMapper.toResponse(attempt);
+        return null;
     }
 
     @Override
