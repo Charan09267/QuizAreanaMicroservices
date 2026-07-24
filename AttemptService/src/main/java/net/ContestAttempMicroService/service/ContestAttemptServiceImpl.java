@@ -2,6 +2,7 @@ package net.ContestAttempMicroService.service;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.ContestAttempMicroService.Client.ContestServiceClient;
 import net.ContestAttempMicroService.Mapper.AttemptMapper;
 import net.ContestAttempMicroService.Repo.ContestAttemptRepository;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ContestAttemptServiceImpl implements ContestAttemptService {
     private final ContestServiceClient contestServiceClient;
     private final ContestAttemptRepository contestAttemptRepository;
@@ -134,5 +136,54 @@ public class ContestAttemptServiceImpl implements ContestAttemptService {
     @Override
     public ContestResultResponse getResult(Long attemptId, Long userId) {
         return null;
+    }
+
+    @Override
+    public void updateEvaluation(
+            Long participantId ,EvaluationResultDto dto
+    ) {
+
+        ContestAttempt attempt =
+                contestAttemptRepository
+                        .findByParticipantId(dto.getParticipantId())
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Contest Attempt not found"
+                                )
+                        );
+        if (attempt.getStatus() == AttemptStatus.SUBMITTED) {
+            log.info("Evaluation already processed for participant {}",
+                    dto.getParticipantId());
+            return;
+        }
+
+        attempt.setScore(dto.getScore());
+
+        attempt.setCorrectAnswers(
+                dto.getCorrectAnswers()
+        );
+
+        attempt.setWrongAnswers(
+                dto.getWrongAnswers()
+        );
+
+        attempt.setUnansweredQuestions(
+                dto.getUnansweredQuestions()
+        );
+
+        attempt.setTotalQuestions(
+                dto.getTotalQuestions()
+        );
+
+        attempt.setSubmittedAt(
+                dto.getSubmittedAt()
+        );
+
+        attempt.setStatus(
+                AttemptStatus.SUBMITTED
+        );
+
+        contestAttemptRepository.save(attempt);
+
     }
 }

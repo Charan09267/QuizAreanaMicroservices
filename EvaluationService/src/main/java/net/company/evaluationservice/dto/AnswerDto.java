@@ -1,4 +1,4 @@
-package net.ContestAttempMicroService.dto;
+package net.company.evaluationservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

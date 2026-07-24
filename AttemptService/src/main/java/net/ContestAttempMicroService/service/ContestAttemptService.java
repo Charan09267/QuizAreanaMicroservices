@@ -2,6 +2,7 @@ package net.ContestAttempMicroService.service;
 
 import net.ContestAttempMicroService.dto.AttemptResponse;
 import net.ContestAttempMicroService.dto.ContestResultResponse;
+import net.ContestAttempMicroService.dto.EvaluationResultDto;
 import net.ContestAttempMicroService.dto.SubmitRequestDto;
 
 public interface ContestAttemptService {
@@ -12,4 +13,5 @@ public interface ContestAttemptService {
     String submitContest(Long attemptId , Long userId , SubmitRequestDto submitRequestDto);
 
     ContestResultResponse getResult(Long attemptId , Long userId);
+    void updateEvaluation(Long participantId , EvaluationResultDto dto);
 }

@@ -6,6 +6,7 @@ import net.contestmicroservice.Service.implementations.ContestServiceImpl;
 import net.contestmicroservice.Service.interfaces.ContestService;
 import net.contestmicroservice.dto.request.CreateContestRequest;
 import net.contestmicroservice.dto.request.UpdateContestRequest;
+import net.contestmicroservice.dto.response.AnswerKeyDto;
 import net.contestmicroservice.dto.response.ContestResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -95,6 +96,13 @@ public class ContestController {
         return ResponseEntity.ok(
                 contestService.cancelContest(contestId ,userId )
         );
+    }
+
+    @GetMapping("/{contestId}/answer-key")
+    public ResponseEntity<List<AnswerKeyDto>> getAnswerKey(
+            @PathVariable Long contestId) {
+
+        return ResponseEntity.ok(contestService.getAnswerKey(contestId));
     }
 
 }

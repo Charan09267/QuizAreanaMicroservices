@@ -2,6 +2,7 @@ package net.contestmicroservice.Service.interfaces;
 
 import net.contestmicroservice.dto.request.CreateContestRequest;
 import net.contestmicroservice.dto.request.UpdateContestRequest;
+import net.contestmicroservice.dto.response.AnswerKeyDto;
 import net.contestmicroservice.dto.response.ContestResponse;
 
 import java.util.List;
@@ -27,4 +28,6 @@ public interface ContestService {
     void activateContests();
 
     void completeContests();
+
+    List<AnswerKeyDto> getAnswerKey(Long contestId);
 }

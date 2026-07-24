@@ -8,18 +8,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(
-        name = "contest-service"
-)
+@FeignClient(name = "${services.contest.name}")
 public interface ContestServiceClient {
+
     @GetMapping("/contests/{id}")
-    ContestDto getContestById(@PathVariable Long id);
+    ContestDto getContestById(@PathVariable("id") Long id);
 
     @GetMapping("/contests/{id}/participants/{userId}")
-    Long getParticipantId(@PathVariable Long id , @PathVariable Long userId);
+    Long getParticipantId(@PathVariable("id") Long id,
+                          @PathVariable("userId") Long userId);
 
     @PostMapping("/contests/{contestId}/participants/{userId}")
-    void setParticipantStatus(@PathVariable Long contestId, @PathVariable Long userId, @RequestBody ParticipantStatus status);
-
-
+    void setParticipantStatus(@PathVariable("contestId") Long contestId,
+                              @PathVariable("userId") Long userId,
+                              @RequestBody ParticipantStatus status);
 }

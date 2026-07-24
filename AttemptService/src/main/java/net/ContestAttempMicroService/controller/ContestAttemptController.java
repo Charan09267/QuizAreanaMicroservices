@@ -2,10 +2,7 @@ package net.ContestAttempMicroService.controller;
 
 
 import lombok.RequiredArgsConstructor;
-import net.ContestAttempMicroService.dto.AnswerDto;
-import net.ContestAttempMicroService.dto.AttemptResponse;
-import net.ContestAttempMicroService.dto.ContestResultResponse;
-import net.ContestAttempMicroService.dto.SubmitRequestDto;
+import net.ContestAttempMicroService.dto.*;
 import net.ContestAttempMicroService.service.ContestAttemptService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,4 +49,13 @@ public class ContestAttemptController {
 //        return ResponseEntity.ok(
 //                contestAttemptService.getResult(attemptId , userId));
 //    }
+
+    @PutMapping("/{participantId}/evaluation")
+    public ResponseEntity<Void> updateEvaluation(
+            @PathVariable Long participantId,
+            @RequestBody EvaluationResultDto dto
+    ) {
+        contestAttemptService.updateEvaluation(participantId, dto);
+        return ResponseEntity.ok().build();
+    }
 }

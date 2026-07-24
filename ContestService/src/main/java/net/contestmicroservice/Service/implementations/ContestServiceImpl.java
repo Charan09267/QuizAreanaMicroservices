@@ -9,8 +9,10 @@ import net.contestmicroservice.Repo.QuestionRepo;
 import net.contestmicroservice.Service.interfaces.ContestService;
 import net.contestmicroservice.dto.request.CreateContestRequest;
 import net.contestmicroservice.dto.request.UpdateContestRequest;
+import net.contestmicroservice.dto.response.AnswerKeyDto;
 import net.contestmicroservice.dto.response.ContestResponse;
 import net.contestmicroservice.entity.Contest;
+import net.contestmicroservice.entity.ContestOption;
 import net.contestmicroservice.entity.enums.ContestStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -206,5 +208,30 @@ public class ContestServiceImpl implements ContestService {
             contest.setStatus(ContestStatus.COMPLETED);
             log.info("Contest {} completed", contest.getId());
         });
+    }
+
+    @Override
+    public List<AnswerKeyDto> getAnswerKey(Long contestId) {
+        Contest contest = contestRepository.findById(contestId)
+                .orElseThrow(()->new ResourceNotFoundException("Contest not found for the given id..."));
+
+        return contest.getQuestions()
+                .stream()
+                .map(question -> {
+
+                    List<Long> correctOptionIds = question.getOptions()
+                            .stream()
+                            .filter(ContestOption::getIsCorrect)
+                            .map(ContestOption::getId)
+                            .toList();
+
+                    return AnswerKeyDto.builder()
+                            .questionId(question.getId())
+                            .marks(question.getMarks())
+                            .questionType(question.getQuestionType())
+                            .correctOptionIds(correctOptionIds)
+                            .build();
+                })
+                .toList();
     }
 }
