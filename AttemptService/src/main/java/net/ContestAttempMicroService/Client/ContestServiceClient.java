@@ -18,7 +18,7 @@ public interface ContestServiceClient {
     @GetMapping("/contests/{id}/participants/{userId}")
     Long getParticipantId(@PathVariable Long id , @PathVariable Long userId);
 
-    @PostMapping("/contest/{contestId}/participants/{userId}")
+    @PostMapping("/contests/{contestId}/participants/{userId}")
     void setParticipantStatus(@PathVariable Long contestId, @PathVariable Long userId, @RequestBody ParticipantStatus status);
 
 

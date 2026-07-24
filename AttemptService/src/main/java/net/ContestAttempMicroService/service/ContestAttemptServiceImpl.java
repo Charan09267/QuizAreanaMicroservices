@@ -9,9 +9,11 @@ import net.ContestAttempMicroService.dto.*;
 import net.ContestAttempMicroService.entity.AttemptStatus;
 import net.ContestAttempMicroService.entity.ContestAttempt;
 import net.ContestAttempMicroService.entity.ParticipantStatus;
+import net.ContestAttempMicroService.kafka.AssessmentEventProducer;
 import net.company.common.Exception.ContestNotFoundException;
 import net.company.common.Exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -23,6 +25,8 @@ public class ContestAttemptServiceImpl implements ContestAttemptService {
     private final ContestServiceClient contestServiceClient;
     private final ContestAttemptRepository contestAttemptRepository;
     private final AttemptMapper attemptMapper;
+    private final AssessmentEventProducer producer;
+
 
     @Override
     public AttemptResponse startContest(Long contestId , Long userId) {
@@ -81,12 +85,13 @@ public class ContestAttemptServiceImpl implements ContestAttemptService {
     }
 
     @Override
+    @Transactional
     public String submitContest(Long contestId, Long userId , SubmitRequestDto request) {
 
         Long participantId = contestServiceClient.getParticipantId(contestId, userId);
 
         ContestAttempt attempt =
-                contestAttemptRepository.findById(participantId)
+                contestAttemptRepository.findByParticipantId(participantId)
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
                                         "Attempt not found"));
@@ -101,12 +106,29 @@ public class ContestAttemptServiceImpl implements ContestAttemptService {
             throw new IllegalArgumentException("No answers submitted.");
         }
 
-//        // Publish the submission to Kafka
-//        kafkaTemplate.send("contest-submissions", request);
-//
-//        return "Contest submitted successfully. Evaluation is in progress.";
+        AssessmentSubmittedEvent event =
+                AssessmentSubmittedEvent.builder()
+                        .contestId(contestId)
+                        .participantId(participantId)
+                        .userId(userId)
+                        .answers(request.getAnswers())
+                        .submittedAt(LocalDateTime.now())
+                        .build();
 
-        return null;
+        try {
+
+            producer.publish(event).get(); // Wait for Kafka acknowledgement
+
+            attempt.setStatus(AttemptStatus.SUBMITTED);
+            contestAttemptRepository.save(attempt);
+
+            return "Submission accepted. Evaluation started.";
+
+        } catch (Exception e) {
+
+            throw new RuntimeException("Failed to publish submission to Kafka", e);
+        }
+
     }
 
     @Override
